@@ -1,0 +1,24 @@
+spring:
+  cloud:
+    stream:
+      bindings:
+        pos-input-channel:
+          destination: avro-pos-topic
+      kafka:
+        streams:
+          binder:
+            brokers: localhost:9092
+            configuration:
+              schema:
+                registry:
+                  url: http://localhost:8081
+              processing:
+                # the default is at_least_once (ensures you will not lose a record). You just need to specify "exactly once"
+                # The rest will be implemented by the framework. BUT IF WE WANT TO ENSURE THAT EVERYTHING HAPPENS ONCE
+                # IN ONE TRANSACTION, WE MUST USE ONE LISTENER. MULTIPLE LISTENERS - MULTIPLE TRANSACTIONS
+                guarantee: exactly_once
+              default:
+                key:
+                  serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+                value:
+                  serde: io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde
